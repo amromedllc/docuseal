@@ -65,24 +65,20 @@ class SsoLoginController < ApplicationController
     end
   
     def find_or_create_user(email, first_name, last_name, company_id = nil, company_name = nil)
-      # Find or create account based on company_id
-      account = find_or_create_account_by_company(company_id, company_name)
-  
       # Try to find existing user by email (email is unique globally)
       user = User.find_by(email: email)
   
       if user
-        # User exists - check if they're in the correct account
-        if user.account_id != account.id
-          # User exists but in a different account
-          # Move user to the correct account if company_id is provided
-          if company_id.present?
-            Rails.logger.info("Moving user #{email} from account #{user.account_id} to account #{account.id} (company_id: #{company_id})")
-            user.update(account_id: account.id)
-          else
-            # If no company_id provided, keep user in existing account but log warning
-            Rails.logger.warn("User #{email} exists in account #{user.account_id} but company_id not provided in token")
-            account = user.account # Use existing account
+        # User exists - KEEP them in their existing account
+        # Don't move users between accounts to preserve their data (files, templates, etc.)
+        account = user.account
+        Rails.logger.info("User #{email} exists in account #{account.id} (#{account.name}). Keeping in existing account.")
+        
+        # Log if company_id points to a different account (for debugging)
+        if company_id.present? || company_name.present?
+          expected_account = find_or_create_account_by_company(company_id, company_name)
+          if expected_account && user.account_id != expected_account.id
+            Rails.logger.warn("User #{email} is in account #{user.account_id} but company_id #{company_id} points to account #{expected_account.id}. User kept in existing account to preserve data.")
           end
         end
   
@@ -96,7 +92,9 @@ class SsoLoginController < ApplicationController
         return user
       end
   
-      # User doesn't exist, create a new one in the specified account
+      # User doesn't exist - create account based on company_id and create new user
+      account = find_or_create_account_by_company(company_id, company_name)
+  
       # Generate a random password for the new user
       password = SecureRandom.hex(16)
   
