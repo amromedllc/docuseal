@@ -82,10 +82,16 @@ class SsoLoginController < ApplicationController
           end
         end
   
-        # Update user info if provided and different
+        # Don't update name from SSO token for existing users
+        # This preserves user's manually updated profile information
+        # Only update if name fields are empty (initial setup)
         update_attrs = {}
-        update_attrs[:first_name] = first_name if first_name.present? && user.first_name != first_name
-        update_attrs[:last_name] = last_name if last_name.present? && user.last_name != last_name
+        if user.first_name.blank? && first_name.present?
+          update_attrs[:first_name] = first_name
+        end
+        if user.last_name.blank? && last_name.present?
+          update_attrs[:last_name] = last_name
+        end
         
         user.update(update_attrs) if update_attrs.any?
   
