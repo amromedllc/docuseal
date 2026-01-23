@@ -22,8 +22,13 @@ class SsoLoginController < ApplicationController
         email = decoded_token['email']&.downcase
         first_name = decoded_token['first_name']
         last_name = decoded_token['last_name']
-        company_id = decoded_token['company_id'] || decoded_token['account_id'] || decoded_token['organization_id']
-        company_name = decoded_token['company_name'] || decoded_token['account_name'] || decoded_token['organization_name']
+        # Check for facility_id/facility_name first (new payload format), then fallback to company_id/company_name
+        company_id = decoded_token['facility_id'] || decoded_token['company_id'] || decoded_token['account_id'] || decoded_token['organization_id']
+        company_name = decoded_token['facility_name'] || decoded_token['company_name'] || decoded_token['account_name'] || decoded_token['organization_name']
+  
+        Rails.logger.info("SSO Login - Email: #{email}, Company ID: #{company_id}, Company Name: #{company_name}")
+        Rails.logger.info("JWT Payload keys: #{decoded_token.keys.inspect}")
+        Rails.logger.info("Full JWT Payload: #{decoded_token.inspect}")
   
         unless email.present?
           return redirect_to root_path, alert: 'Invalid token: email missing'
@@ -113,51 +118,74 @@ class SsoLoginController < ApplicationController
     end
   
     def find_or_create_account_by_company(company_id = nil, company_name = nil)
+      Rails.logger.info("Finding or creating account - company_id: #{company_id}, company_name: #{company_name}")
+  
       # If company_id is provided, try to find account by ID or UUID
       if company_id.present?
-        # Try to find by ID first
-        account = Account.active.find_by(id: company_id)
+        # Try to find by ID first (handle both string and integer)
+        company_id_int = company_id.to_i
+        account = Account.active.find_by(id: company_id_int) if company_id_int > 0
         
         # If not found by ID, try to find by UUID
         account ||= Account.active.find_by(uuid: company_id.to_s) if account.nil?
         
-        return account if account
+        if account
+          Rails.logger.info("Found existing account: #{account.id} (#{account.name}) for company_id: #{company_id}")
+          return account
+        else
+          Rails.logger.info("Account not found for company_id: #{company_id}, creating new account")
+          # Account not found - create new one with company_id reference
+          account_name = company_name.present? ? company_name : "Company #{company_id}"
+          account = Account.create!(
+            name: account_name,
+            timezone: 'UTC',
+            locale: 'en-US'
+          )
+          initialize_account_configs(account)
+          Rails.logger.info("Created new account: #{account.id} (#{account.name}) for company_id: #{company_id}")
+          return account
+        end
       end
   
       # If company_name is provided, try to find by name
       if company_name.present?
         account = Account.active.find_by(name: company_name)
-        return account if account
+        if account
+          Rails.logger.info("Found existing account: #{account.id} (#{account.name}) for company_name: #{company_name}")
+          return account
+        else
+          Rails.logger.info("Account not found for company_name: #{company_name}, creating new account")
+          # Account not found - create new one
+          account = Account.create!(
+            name: company_name,
+            timezone: 'UTC',
+            locale: 'en-US'
+          )
+          initialize_account_configs(account)
+          Rails.logger.info("Created new account: #{account.id} (#{account.name}) for company_name: #{company_name}")
+          return account
+        end
       end
   
-      # If no company_id or company_name provided, or account not found
+      # If no company_id or company_name provided
       # Check if this is the first user (no accounts exist)
       if Account.active.count.zero?
-        # Create the first default account
-        account = create_default_account(company_name || 'Default Account')
+        Rails.logger.info("No accounts exist, creating first default account")
+        account = create_default_account('Default Account')
         return account
       end
   
-      # If company_id/name not provided and accounts exist, we need to create a new account
-      # Use company_name if provided, otherwise generate a unique name
-      account_name = if company_name.present?
-                       company_name
-                     elsif company_id.present?
-                       "Company #{company_id}"
-                     else
-                       "Company #{SecureRandom.hex(4)}"
-                     end
-  
-      # Create new account for this company
+      # If no company_id/name provided and accounts exist, create a new account with unique name
+      # This should not happen in production if company_id is always provided
+      account_name = "Company #{SecureRandom.hex(4)}"
+      Rails.logger.warn("No company_id or company_name provided, creating account with random name: #{account_name}")
       account = Account.create!(
         name: account_name,
         timezone: 'UTC',
         locale: 'en-US'
       )
-  
-      # Initialize account with required configs
       initialize_account_configs(account)
-  
+      Rails.logger.info("Created new account: #{account.id} (#{account.name}) without company identifier")
       account
     end
   
