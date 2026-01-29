@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+
+  # config/routes.rb
+  get 'public_access_token', to: 'access_tokens#public_by_email'
+
+
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
   if !Docuseal.multitenant? && defined?(Sidekiq::Web)
