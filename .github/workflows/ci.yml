@@ -22,5 +22,7 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd ${{ secrets.PROD_PATH }}
+            cd src && git pull
+            cd ..
             docker compose down
             docker compose up -d --build
