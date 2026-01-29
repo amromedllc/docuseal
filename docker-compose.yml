@@ -1,39 +1,19 @@
 services:
-  app:
-    depends_on:
-      postgres:
-        condition: service_healthy
-    image: docuseal/docuseal:latest
+  docuseal:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: docuseal-local:latest
     ports:
-      - 3000:3000
+      - "8081:3000"
     volumes:
-      - ./docuseal:/data/docuseal
+      - docuseal_data:/data
     environment:
-      - FORCE_SSL=${HOST}
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/docuseal
-
-  postgres:
-    image: postgres:18
-    volumes:
-      - './pg_data:/var/lib/postgresql/18/docker'
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: docuseal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  caddy:
-    image: caddy:latest
-    command: caddy reverse-proxy --from $HOST --to app:3000
-    ports:
-      - 80:80
-      - 443:443
-      - 443:443/udp
-    volumes:
-      - ./caddy:/data/caddy
-    environment:
-      - HOST=${HOST}
+      # DATABASE_URL: postgresql://therapypms_forms_user:6yq0AlreBFRFj8jd@40.160.16.121:5432/therapypms_forms_doc
+      DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:5432/therapypms_form
+      SECRET_KEY_BASE: d1241ec234d59b208f90bd2390180ad8cb5c814509092b61e97c75107aa9d591c0a34f6a27dc785b36ea0af3e7a69a65fabb2e265b5e575936fb05363a2565ff
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # restart: unless-stopped
+volumes:
+  docuseal_data:

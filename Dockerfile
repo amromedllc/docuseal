@@ -76,7 +76,7 @@ RUN echo 'https://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositor
 COPY --chown=docuseal:docuseal ./bin ./bin
 COPY --chown=docuseal:docuseal ./app ./app
 COPY --chown=docuseal:docuseal ./config ./config
-COPY --chown=docuseal:docuseal ./db/migrate ./db/migrate
+# COPY --chown=docuseal:docuseal ./db/migrate ./db/migrate
 COPY --chown=docuseal:docuseal ./log ./log
 COPY --chown=docuseal:docuseal ./lib ./lib
 COPY --chown=docuseal:docuseal ./public ./public
