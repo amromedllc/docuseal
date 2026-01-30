@@ -27,15 +27,7 @@
         <label tabindex="0" class="cursor-pointer bg-base-content text-purple-300 rounded-full p-2 w-9 justify-center flex">
           <span class="text-sm align-text-top"><%= current_user.initials %></span>
         </label>
-        <ul tabindex="0" class="z-10 dropdown-content p-2 mt-2 shadow menu text-base bg-base-100 rounded-box min-w-[160px] text-right">
-       
-          <li>
-            <%= button_to destroy_user_session_path, method: :delete, data: { turbo: false }, class: 'flex items-center' do %>
-              <%= svg_icon('logout', class: 'w-5 h-5 flex-shrink-0 stroke-2 mr-2 inline') %>
-              <span class="mr-1 whitespace-nowrap"><%= t('sign_out') %></span>
-            <% end %>
-          </li>
-        </ul>
+     
       </div>
     </div>
   <% else %>
