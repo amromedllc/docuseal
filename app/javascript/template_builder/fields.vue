@@ -193,6 +193,23 @@
     </template>
   </div>
   <div
+    v-if="predefinedFields.length && editable"
+    class="mt-2"
+  >
+    <div class="text-xs text-base-content/50 font-medium px-1 pb-1 uppercase tracking-wide">Predefined Fields</div>
+    <div class="grid grid-cols-1 gap-1">
+      <button
+        v-for="field in predefinedFields"
+        :key="field.name"
+        class="btn btn-sm btn-outline w-full justify-start text-sm font-normal"
+        @click="$emit('set-draw-with-name', { name: field.name, type: field.type || 'text' })"
+      >
+        <FieldType :model-value="field.type || 'text'" :editable="false" :button-width="16" />
+        <span class="ml-1 truncate">{{ field.title || field.name }}</span>
+      </button>
+    </div>
+  </div>
+  <div
     v-if="fields.length < 4 && editable && withHelp && !showTourStartForm"
     class="text-xs p-2 border border-base-200 rounded"
   >
@@ -370,9 +387,14 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    predefinedFields: {
+      type: Array,
+      required: false,
+      default: () => []
     }
   },
-  emits: ['add-field', 'set-draw', 'set-draw-type', 'set-drag', 'drag-end', 'scroll-to-area', 'change-submitter', 'set-drag-placeholder', 'select-submitter'],
+  emits: ['add-field', 'set-draw', 'set-draw-type', 'set-drag', 'drag-end', 'scroll-to-area', 'change-submitter', 'set-drag-placeholder', 'select-submitter', 'set-draw-with-name'],
   data () {
     return {
       fieldPagesLoaded: null,

@@ -489,10 +489,12 @@
             :only-defined-fields="onlyDefinedFields"
             :editable="editable"
             :show-tour-start-form="showTourStartForm"
+            :predefined-fields="predefinedFields"
             @add-field="addField"
             @set-draw="[drawField = $event.field, drawOption = $event.option]"
             @select-submitter="selectedSubmitter = $event"
             @set-draw-type="[drawFieldType = $event, showDrawField = true]"
+            @set-draw-with-name="[drawFieldType = $event.type, drawFieldName = $event.name, showDrawField = true]"
             @set-drag="dragField = $event"
             @set-drag-placeholder="$refs.dragPlaceholder.dragPlaceholder = $event"
             @change-submitter="selectedSubmitter = $event"
@@ -885,6 +887,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    predefinedFields: {
+      type: Array,
+      required: false,
+      default: () => []
     }
   },
   data () {
@@ -902,6 +909,7 @@ export default {
       pendingFieldAttachmentUuids: [],
       drawField: null,
       drawFieldType: null,
+      drawFieldName: '',
       drawOption: null,
       dragField: null,
       isDragFile: false
@@ -1390,7 +1398,7 @@ export default {
     },
     addField (type, area = null) {
       const field = {
-        name: '',
+        name: this.drawFieldName || '',
         uuid: v4(),
         required: type !== 'checkbox',
         areas: area ? [area] : [],
@@ -1427,6 +1435,8 @@ export default {
         field.preferences ||= {}
         field.preferences.with_signature_id = this.withSignatureId
       }
+
+      this.drawFieldName = ''
 
       this.insertField(field)
 
@@ -1515,6 +1525,7 @@ export default {
       this.drawField = null
       this.drawOption = null
       this.showDrawField = false
+      this.drawFieldName = ''
 
       if (!this.withSelectedFieldType) {
         this.drawFieldType = ''

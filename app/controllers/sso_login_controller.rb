@@ -10,7 +10,6 @@ class SsoLoginController < ApplicationController
   
     def login
       token = params[:token]
-      template_id = params[:template_id]
 
       unless token.present?
         return redirect_to root_path, alert: 'Missing authentication token'
@@ -23,6 +22,7 @@ class SsoLoginController < ApplicationController
         email = decoded_token['email']&.downcase
         first_name = decoded_token['first_name']
         last_name = decoded_token['last_name']
+        template_id = decoded_token['template_id']
         # Check for facility_id/facility_name first (new payload format), then fallback to company_id/company_name
         company_id = decoded_token['facility_id'] || decoded_token['company_id'] || decoded_token['account_id'] || decoded_token['organization_id']
         company_name = decoded_token['facility_name'] || decoded_token['company_name'] || decoded_token['account_name'] || decoded_token['organization_name']
@@ -44,7 +44,8 @@ class SsoLoginController < ApplicationController
 
           # Redirect to template preview if template_id is present
           if template_id.present?
-            return redirect_to controller: 'templates', action: 'preview', id: template_id
+            Rails.logger.error("It is here actually. TemplateID: #{template_id}")
+            return redirect_to template_preview_path(template_id)
           end
 
           # Redirect to dashboard
