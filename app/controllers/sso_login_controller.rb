@@ -10,11 +10,12 @@ class SsoLoginController < ApplicationController
   
     def login
       token = params[:token]
-  
+      template_id = params[:template_id]
+
       unless token.present?
         return redirect_to root_path, alert: 'Missing authentication token'
       end
-  
+
       begin
         # Decode JWT token using the SSO secret key
         decoded_token = decode_sso_jwt(token)
@@ -25,22 +26,27 @@ class SsoLoginController < ApplicationController
         # Check for facility_id/facility_name first (new payload format), then fallback to company_id/company_name
         company_id = decoded_token['facility_id'] || decoded_token['company_id'] || decoded_token['account_id'] || decoded_token['organization_id']
         company_name = decoded_token['facility_name'] || decoded_token['company_name'] || decoded_token['account_name'] || decoded_token['organization_name']
-  
+
         Rails.logger.info("SSO Login - Email: #{email}, Company ID: #{company_id}, Company Name: #{company_name}")
         Rails.logger.info("JWT Payload keys: #{decoded_token.keys.inspect}")
         Rails.logger.info("Full JWT Payload: #{decoded_token.inspect}")
-  
+
         unless email.present?
           return redirect_to root_path, alert: 'Invalid token: email missing'
         end
-  
+
         # Find or create user with company/account
         user = find_or_create_user(email, first_name, last_name, company_id, company_name)
-  
+
         if user
           # Sign in the user
           sign_in(user)
-          
+
+          # Redirect to template preview if template_id is present
+          if template_id.present?
+            return redirect_to controller: 'templates', action: 'preview', id: template_id
+          end
+
           # Redirect to dashboard
           redirect_to root_path, notice: 'Signed in successfully'
         else
@@ -234,4 +240,3 @@ class SsoLoginController < ApplicationController
       end
     end
   end
-  
