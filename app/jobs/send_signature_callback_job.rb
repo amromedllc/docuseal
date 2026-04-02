@@ -6,7 +6,7 @@ class SendSignatureCallbackJob
   sidekiq_options queue: :webhooks
 
   TRACKED_FIELD_NAMES = %w[provider_signature client_caregiver_signature supervisor_signature].freeze
-  CALLBACK_ENDPOINT = 'https://app.therapypms.com/v1/note/signed'.freeze
+  CALLBACK_ENDPOINT = 'https://app.therapypms.com/api/v1/note/signed'.freeze
 
   def perform(params = {})
     submitter = Submitter.find_by(id: params['submitter_id'])
