@@ -85,6 +85,12 @@ class SubmissionsController < ApplicationController
       if params[:permanently].in?(['true', true])
         WebhookUrls.enqueue_events(@submission, 'submission.archived')
 
+        SendIntakeRemoveCallbackJob.perform_async(
+          'admin_id'     => @submission.account_id,
+          'template_id'  => @submission.template_id,
+          'submission_id' => @submission.id
+        )
+
         @submission.destroy!
 
         I18n.t('submission_has_been_removed')
