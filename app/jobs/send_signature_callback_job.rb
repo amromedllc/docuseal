@@ -49,7 +49,7 @@ class SendSignatureCallbackJob
     return if signatures.empty?
 
     payload = {
-      admin_id: submitter.submission.created_by_user_id,
+      admin_id: submitter.account_id,
       template_id: submitter.submission.template_id,
       submission_id: submitter.submission_id,
       embed_src: build_embed_src(submitter),
