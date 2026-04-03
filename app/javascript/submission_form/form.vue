@@ -995,10 +995,13 @@ export default {
       return this.currentField.type === 'checkbox' && this.currentStepFields.every((e) => !e.name && !e.required) && this.currentStepFields.length > 4
     },
     isButtonDisabled () {
+      const optionalSignatureNames = ['provider_signature', 'client_caregiver_signature', 'supervisor_signature']
+      const isAlwaysOptional = optionalSignatureNames.includes(this.currentField.name)
+
       if (this.recalculateButtonDisabledKey) {
         return this.isSubmitting ||
-        (this.currentField.required && ['image', 'file', 'multiple'].includes(this.currentField.type) && !this.values[this.currentField.uuid]?.length) ||
-        (this.currentField.required && this.currentField.type === 'signature' && !this.values[this.currentField.uuid]?.length && this.$refs.currentStep && !this.$refs.currentStep.isSignatureStarted) ||
+        (this.currentField.required && !isAlwaysOptional && ['image', 'file', 'multiple'].includes(this.currentField.type) && !this.values[this.currentField.uuid]?.length) ||
+        (this.currentField.required && !isAlwaysOptional && this.currentField.type === 'signature' && !this.values[this.currentField.uuid]?.length && this.$refs.currentStep && !this.$refs.currentStep.isSignatureStarted) ||
         (this.currentField.required && this.currentField.type === 'initials' && !this.values[this.currentField.uuid]?.length && this.$refs.currentStep && !this.$refs.currentStep.isInitialsStarted)
       } else {
         return false
