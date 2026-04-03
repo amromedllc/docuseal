@@ -1340,9 +1340,14 @@ export default {
       })
     },
     previousSignatureValueFor (field) {
-      if (this.reuseSignature !== false) {
+      const trackedSignatureNames = ['provider_signature', 'client_caregiver_signature', 'supervisor_signature']
+
+      if (this.reuseSignature !== false && !trackedSignatureNames.includes(field.name)) {
         const signatureField = [...this.fields].reverse().find((f) =>
-          f.type === 'signature' && field.preferences?.format === f.preferences?.format && !!this.values[f.uuid]
+          f.type === 'signature' &&
+          !trackedSignatureNames.includes(f.name) &&
+          field.preferences?.format === f.preferences?.format &&
+          !!this.values[f.uuid]
         )
 
         return this.values[signatureField?.uuid]
