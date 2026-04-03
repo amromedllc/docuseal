@@ -430,9 +430,7 @@ export default {
       }
     },
     computedPreviousValue () {
-      const optionalSignatureNames = ['provider_signature', 'client_caregiver_signature', 'supervisor_signature']
-
-      if (this.isUsePreviousValue && this.field.required === true && !optionalSignatureNames.includes(this.field.name)) {
+      if (this.isUsePreviousValue && this.field.required === true) {
         return this.previousValue
       } else {
         return null
@@ -695,9 +693,6 @@ export default {
       }
     },
     async submit () {
-      const optionalSignatureNames = ['provider_signature', 'client_caregiver_signature', 'supervisor_signature']
-      const isAlwaysOptional = optionalSignatureNames.includes(this.field.name)
-
       if (this.modelValue || this.computedPreviousValue) {
         if (this.computedPreviousValue) {
           this.$emit('update:model-value', this.computedPreviousValue)
@@ -706,17 +701,13 @@ export default {
         return Promise.resolve({})
       }
 
-      if (isAlwaysOptional && !this.isSignatureStarted) {
-        return Promise.resolve({})
-      }
-
       if (this.isSignatureStarted && this.pad.toData().length > 0 && !isValidSignatureCanvas(this.pad.toData())) {
-        if (this.field.required === true && !isAlwaysOptional) {
+        if (this.field.required === true || this.pad.toData().length > 0) {
           alert(this.t('signature_is_too_small_or_simple_please_redraw'))
 
           return Promise.reject(new Error('Image too small or simple'))
         } else {
-          return Promise.resolve({})
+          Promise.resolve({})
         }
       }
 
@@ -767,7 +758,7 @@ export default {
             })
           }
         }).catch((error) => {
-          if (this.field.required === true && !optionalSignatureNames.includes(this.field.name)) {
+          if (this.field.required === true) {
             alert(this.t('signature_is_too_small_or_simple_please_redraw'))
 
             return reject(error)
