@@ -22,6 +22,7 @@ class SsoLoginController < ApplicationController
         email = decoded_token['email']&.downcase
         first_name = decoded_token['first_name']
         last_name = decoded_token['last_name']
+        user_type = decoded_token['user_type']
         template_id = decoded_token['template_id']
         # Check for facility_id/facility_name first (new payload format), then fallback to company_id/company_name
         company_id = decoded_token['facility_id'] || decoded_token['company_id'] || decoded_token['account_id'] || decoded_token['organization_id']
@@ -36,7 +37,7 @@ class SsoLoginController < ApplicationController
         end
 
         # Find or create user with company/account
-        user = find_or_create_user(email, first_name, last_name, company_id, company_name)
+        user = find_or_create_user(email, first_name, last_name, company_id, company_name, user_type)
 
         if user
           # Sign in the user
@@ -71,7 +72,7 @@ class SsoLoginController < ApplicationController
       decoded[0] # Return the payload
     end
   
-    def find_or_create_user(email, first_name, last_name, company_id = nil, company_name = nil)
+    def find_or_create_user(email, first_name, last_name, company_id = nil, company_name = nil, user_type = nil)
       # Try to find existing user by email (email is unique globally)
       user = User.find_by(email: email)
   
@@ -89,15 +90,19 @@ class SsoLoginController < ApplicationController
           end
         end
   
-        # Don't update name from SSO token for existing users
-        # This preserves user's manually updated profile information
-        # Only update if name fields are empty (initial setup)
+        # Update user attributes from SSO
+        # Names are only updated if blank to preserve manual changes
+        # Role is updated if a different user_type is provided in the SSO payload
         update_attrs = {}
         if user.first_name.blank? && first_name.present?
           update_attrs[:first_name] = first_name
         end
         if user.last_name.blank? && last_name.present?
           update_attrs[:last_name] = last_name
+        end
+        if user_type.present? && user.role != user_type
+          update_attrs[:role] = user_type
+          Rails.logger.info("Updating user #{user.email} role to #{user_type} from SSO")
         end
         
         user.update(update_attrs) if update_attrs.any?
@@ -117,7 +122,7 @@ class SsoLoginController < ApplicationController
         first_name: first_name || '',
         last_name: last_name || '',
         password: password,
-        role: User::ADMIN_ROLE
+        role: user_type.presence || User::ADMIN_ROLE
       )
   
       if user.save
