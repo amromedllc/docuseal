@@ -31,8 +31,9 @@ class ApplicationMailer < ActionMailer::Base
     @message_metadata = (@message_metadata || {}).merge(
       'tag' => tag,
       'record_id' => record.id,
-      'record_type' => record.class.name
-    )
+      'record_type' => record.class.name,
+      'account_id' => record.try(:account_id) || (record.is_a?(Account) ? record.id : nil)
+    ).compact
   end
 
   def put_metadata(attrs)

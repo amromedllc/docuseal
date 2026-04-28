@@ -9,8 +9,9 @@ class EmailSmtpSettingsController < ApplicationController
 
   def create
     if @encrypted_config.update(email_configs)
-      unless Docuseal.multitenant?
-        SettingsMailer.smtp_successful_setup(@encrypted_config.value['from_email'] || current_user.email).deliver_now!
+      unless Docuseal.multitenant? && @encrypted_config.value['from_email'].blank?
+        SettingsMailer.smtp_successful_setup(@encrypted_config.value['from_email'] || current_user.email,
+                                             current_account).deliver_now!
       end
 
       redirect_to settings_email_index_path, notice: I18n.t('changes_have_been_saved')

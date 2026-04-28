@@ -27,7 +27,28 @@
         <label tabindex="0" class="cursor-pointer bg-base-content text-purple-300 rounded-full p-2 w-9 justify-center flex">
           <span class="text-sm align-text-top"><%= current_user.initials %></span>
         </label>
-     
+        <ul tabindex="0" class="dropdown-content z-[10] menu p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+          <li class="menu-title border-b border-base-300 pb-2 mb-2">
+            <div class="flex flex-col">
+              <span class="font-bold text-base-content"><%= current_user.full_name %></span>
+              <span class="text-xs text-base-content/60 truncate"><%= current_user.email %></span>
+            </div>
+          </li>
+          <% if current_user.role == User::ADMIN_ROLE %>
+            <li>
+              <%= link_to settings_profile_index_path, class: 'flex items-center space-x-2' do %>
+                <%= svg_icon('settings', class: 'w-5 h-5') %>
+                <span><%= t('settings') %></span>
+              <% end %>
+            </li>
+          <% end %>
+          <li>
+            <%= button_to destroy_user_session_path, method: :delete, class: 'flex items-center space-x-2 text-error' do %>
+              <%= svg_icon('logout', class: 'w-5 h-5') %>
+              <span><%= t('sign_out') %></span>
+            <% end %>
+          </li>
+        </ul>
       </div>
     </div>
   <% else %>
