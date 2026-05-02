@@ -125,6 +125,17 @@ class ProcessSubmitterCompletionJob
 
         SubmitterMailer.completed_email(submitter, user, to:).deliver_later!
       end
+
+      smtp_from_email = submitter.account.encrypted_configs
+                                 .find_by(key: EncryptedConfig::EMAIL_SMTP_KEY)&.value&.dig('from_email')
+
+      if smtp_from_email.present?
+        bcc_emails = build_bcc_addresses(submission)
+
+        unless (is_sent_to_user && user.email == smtp_from_email) || bcc_emails.include?(smtp_from_email)
+          SubmitterMailer.completed_email(submitter, user, to: smtp_from_email).deliver_later!
+        end
+      end
     end
 
     maybe_enqueue_copy_emails(submitter)
