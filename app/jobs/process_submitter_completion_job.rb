@@ -105,37 +105,36 @@ class ProcessSubmitterCompletionJob
     submission = submitter.submission
     template = submitter.template
 
-    author = submission.created_by_user || template.author
-    sent_emails = []
+    user = submission.created_by_user || template.author
 
-    if author && submitter.account.users.exists?(id: author.id) && submission.preferences['send_email'] != false &&
+    if submitter.account.users.exists?(id: user.id) && submission.preferences['send_email'] != false &&
        (!template || template.preferences['completed_notification_email_enabled'] != false)
-      user_submitter = submission.submitters.find { |s| s.email == author.email }
+      user_submitter = submission.submitters.find { |s| s.email == user.email }
 
-      if author.role != 'integration' &&
-         (!user_submitter || user_submitter.preferences['send_email'] == false) &&
-         author.user_configs.find_by(key: UserConfig::RECEIVE_COMPLETED_EMAIL)&.value != false
-        SubmitterMailer.completed_email(submitter, author).deliver_later!
-        sent_emails << author.email
-      end
+      is_sent_to_user =
+        if user.role != 'integration' &&
+           (!user_submitter || user_submitter.preferences['send_email'] == false) &&
+           user.user_configs.find_by(key: UserConfig::RECEIVE_COMPLETED_EMAIL)&.value != false
+          SubmitterMailer.completed_email(submitter, user).deliver_later!
+
+          true
+        end
 
       build_bcc_addresses(submission).each do |to|
-        next if sent_emails.include?(to)
+        next if is_sent_to_user && to == user.email
 
-        SubmitterMailer.completed_email(submitter, author, to:).deliver_later!
-        sent_emails << to
+        SubmitterMailer.completed_email(submitter, user, to:).deliver_later!
       end
-    end
 
-    smtp_from_email = submitter.account.encrypted_configs
-                               .find_by(key: EncryptedConfig::EMAIL_SMTP_KEY)&.value&.dig('from_email')
+      submitter.account.users.active.admins.each do |admin|
+        next if is_sent_to_user && admin.id == user.id
 
-    if smtp_from_email.present? && !sent_emails.include?(smtp_from_email)
-      notif_user = author if author && submitter.account.users.exists?(id: author.id)
-      notif_user ||= submitter.account.users.active.admins.first
+        admin_submitter = submission.submitters.find { |s| s.email == admin.email }
 
-      if notif_user
-        SubmitterMailer.completed_email(submitter, notif_user, to: smtp_from_email).deliver_later!
+        if (!admin_submitter || admin_submitter.preferences['send_email'] == false) &&
+           admin.user_configs.find_by(key: UserConfig::RECEIVE_COMPLETED_EMAIL)&.value != false
+          SubmitterMailer.completed_email(submitter, admin).deliver_later!
+        end
       end
     end
 

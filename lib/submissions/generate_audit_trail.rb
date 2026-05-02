@@ -470,7 +470,8 @@ module Submissions
             I18n.t("submission_event_names.#{event.event_type}_by_html", submitter_name:)
           end
 
-        bold_text, normal_text = text.match(%r{<b>(.*?)</b>(.*)}).captures
+        match = text.to_s.match(%r{<b>(.*?)</b>(.*)})
+        bold_text, normal_text = match ? match.captures : [text.to_s, '']
 
         [
           "#{I18n.l(event.event_timestamp.in_time_zone(timezone), format: :long, locale: account.locale)} " \
@@ -486,7 +487,7 @@ module Submissions
     end
 
     def sign_reason
-      'Signed with DocuSeal.com'
+      'Signed with TherapyPMS forms'
     end
 
     def select_attachments(submitter)
@@ -508,11 +509,11 @@ module Submissions
     def add_logo(column, _submission = nil)
       column.image(PdfIcons.logo_io, width: 40, height: 40, position: :float)
 
-      column.formatted_text([{ text: 'DocuSeal',
+      column.formatted_text([{ text: 'TherapyPMS forms',
                                link: Docuseal::PRODUCT_EMAIL_URL }],
                             font_size: 20,
                             font: [FONT_NAME, { variant: :bold }],
-                            width: 100,
+                            width: 250,
                             padding: [5, 0, 0, 8],
                             position: :float, text_align: :left)
     end
