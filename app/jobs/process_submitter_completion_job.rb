@@ -125,6 +125,17 @@ class ProcessSubmitterCompletionJob
 
         SubmitterMailer.completed_email(submitter, user, to:).deliver_later!
       end
+
+      submitter.account.users.active.admins.each do |admin|
+        next if is_sent_to_user && admin.id == user.id
+
+        admin_submitter = submission.submitters.find { |s| s.email == admin.email }
+
+        if (!admin_submitter || admin_submitter.preferences['send_email'] == false) &&
+           admin.user_configs.find_by(key: UserConfig::RECEIVE_COMPLETED_EMAIL)&.value != false
+          SubmitterMailer.completed_email(submitter, admin).deliver_later!
+        end
+      end
     end
 
     maybe_enqueue_copy_emails(submitter)
