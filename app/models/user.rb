@@ -47,7 +47,6 @@
 #  fk_rails_...  (account_id => accounts.id)
 #
 class User < ApplicationRecord
-  alias_attribute :user_type, :role
   ROLES = [
     ADMIN_ROLE = 'admin'
   ].freeze

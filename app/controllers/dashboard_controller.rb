@@ -7,8 +7,9 @@ class DashboardController < ApplicationController
   before_action :maybe_render_landing
   before_action :maybe_redirect_mfa_setup
 
+  skip_authorization_check
+
   def index
-    authorize! :read, :dashboard
     if cookies.permanent[:dashboard_view] == 'submissions'
       SubmissionsDashboardController.dispatch(:index, request, response)
     else
