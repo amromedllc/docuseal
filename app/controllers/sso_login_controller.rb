@@ -22,7 +22,7 @@ class SsoLoginController < ApplicationController
         email = decoded_token['email']&.downcase
         first_name = decoded_token['first_name']
         last_name = decoded_token['last_name']
-        user_type = normalize_user_role(decoded_token['user_type'])
+        user_type = decoded_token['user_type']
         template_id = decoded_token['template_id']
         # Check for facility_id/facility_name first (new payload format), then fallback to company_id/company_name
         company_id = decoded_token['facility_id'] || decoded_token['company_id'] || decoded_token['account_id'] || decoded_token['organization_id']
@@ -131,18 +131,6 @@ class SsoLoginController < ApplicationController
         Rails.logger.error("Failed to create user: #{user.errors.full_messages.join(', ')}")
         nil
       end
-    end
-
-    def normalize_user_role(raw_user_type)
-      value = raw_user_type.to_s.strip.downcase
-      return User::ADMIN_ROLE if value.blank?
-
-      # Accept common SSO variants and map them to the internal role.
-      return User::ADMIN_ROLE if value.in?(%w[admin company_admin facility_admin tenant_admin superadmin])
-
-      return value if User::ROLES.include?(value)
-
-      User::ADMIN_ROLE
     end
   
     def find_or_create_account_by_company(company_id = nil, company_name = nil)
