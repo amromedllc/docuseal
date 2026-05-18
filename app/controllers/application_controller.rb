@@ -36,6 +36,10 @@ class ApplicationController < ActionController::Base
   if Rails.env.production? || Rails.env.test?
     rescue_from CanCan::AccessDenied do |e|
       Rollbar.warning(e) if defined?(Rollbar)
+      Rails.logger.warn(
+        "AccessDenied user_id=#{current_user&.id} email=#{current_user&.email} role=#{current_user&.role} " \
+        "action=#{e.action.inspect} subject=#{e.subject.class} path=#{request.fullpath}"
+      )
 
       redirect_to root_path, alert: e.message
     end
