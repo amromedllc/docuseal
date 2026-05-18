@@ -16,12 +16,15 @@ class Ability
 
     if user.role == User::ADMIN_ROLE
       can :manage, User, account_id: user.account_id
+      can :manage, Template, account_id: user.account_id
+      can :manage, Submission, account_id: user.account_id
       can :manage, EncryptedConfig, account_id: user.account_id
       can :manage, AccountConfig, account_id: user.account_id
       can :manage, Account, id: user.account_id
       can :manage, WebhookUrl, account_id: user.account_id
     end
 
+    can :read, :dashboard
     can :manage, EncryptedUserConfig, user_id: user.id
     can :manage, UserConfig, user_id: user.id
     can :manage, AccessToken, user_id: user.id
