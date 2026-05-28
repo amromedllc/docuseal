@@ -149,7 +149,7 @@ class ProcessSubmitterCompletionJob
 
     return if configs.value['enabled'] == false
 
-    to = submitter.submission.submitters.reject { |e| e.preferences['send_email'] == false }
+    to = submitter.submission.submitters.select { |e| e.preferences['send_email'] == true }
                   .sort_by(&:completed_at).select(&:email?).map(&:friendly_name)
 
     return if to.blank?
