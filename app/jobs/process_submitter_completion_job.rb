@@ -138,28 +138,29 @@ class ProcessSubmitterCompletionJob
       end
     end
 
-    maybe_enqueue_copy_emails(submitter)
+    # Disabled: submitters receive a documents copy only via "Send copy via email" on the completion page.
+    # maybe_enqueue_copy_emails(submitter)
   end
 
-  def maybe_enqueue_copy_emails(submitter)
-    return if submitter.template&.preferences&.dig('documents_copy_email_enabled') == false
-
-    configs = AccountConfigs.find_or_initialize_for_key(submitter.account,
-                                                        AccountConfig::SUBMITTER_DOCUMENTS_COPY_EMAIL_KEY)
-
-    return if configs.value['enabled'] == false
-
-    to = submitter.submission.submitters.select { |e| e.preferences['send_email'] == true }
-                  .sort_by(&:completed_at).select(&:email?).map(&:friendly_name)
-
-    return if to.blank?
-
-    if configs.value['bcc_recipients'] == true
-      to.each { |to| SubmitterMailer.documents_copy_email(submitter, to:).deliver_later! }
-    else
-      SubmitterMailer.documents_copy_email(submitter, to: to.join(', ')).deliver_later!
-    end
-  end
+  # def maybe_enqueue_copy_emails(submitter)
+  #   return if submitter.template&.preferences&.dig('documents_copy_email_enabled') == false
+  #
+  #   configs = AccountConfigs.find_or_initialize_for_key(submitter.account,
+  #                                                       AccountConfig::SUBMITTER_DOCUMENTS_COPY_EMAIL_KEY)
+  #
+  #   return if configs.value['enabled'] == false
+  #
+  #   to = submitter.submission.submitters.select { |e| e.preferences['send_email'] == true }
+  #                 .sort_by(&:completed_at).select(&:email?).map(&:friendly_name)
+  #
+  #   return if to.blank?
+  #
+  #   if configs.value['bcc_recipients'] == true
+  #     to.each { |to| SubmitterMailer.documents_copy_email(submitter, to:).deliver_later! }
+  #   else
+  #     SubmitterMailer.documents_copy_email(submitter, to: to.join(', ')).deliver_later!
+  #   end
+  # end
 
   def build_bcc_addresses(submission)
     bcc = submission.preferences['bcc_completed'].presence ||
