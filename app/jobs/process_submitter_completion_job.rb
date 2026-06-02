@@ -105,38 +105,23 @@ class ProcessSubmitterCompletionJob
     submission = submitter.submission
     template = submitter.template
 
-    user = submission.created_by_user || template.author
+    # Only the template author on this account — not created_by_user, not other admins, not BCC.
+    return unless template
 
-    if submitter.account.users.exists?(id: user.id) && submission.preferences['send_email'] != false &&
-       (!template || template.preferences['completed_notification_email_enabled'] != false)
-      user_submitter = submission.submitters.find { |s| s.email == user.email }
+    user = template.author
 
-      is_sent_to_user =
-        if user.role != 'integration' &&
-           (!user_submitter || user_submitter.preferences['send_email'] == false) &&
-           user.user_configs.find_by(key: UserConfig::RECEIVE_COMPLETED_EMAIL)&.value != false
-          SubmitterMailer.completed_email(submitter, user).deliver_later!
+    return unless user
+    return unless user.account_id == submitter.account_id
+    return if submission.preferences['send_email'] == false
+    return if template.preferences['completed_notification_email_enabled'] == false
 
-          true
-        end
+    user_submitter = submission.submitters.find { |s| s.email == user.email }
 
-      build_bcc_addresses(submission).each do |to|
-        next if is_sent_to_user && to == user.email
+    return unless user.role != 'integration'
+    return if user_submitter && user_submitter.preferences['send_email'] != false
+    return if user.user_configs.find_by(key: UserConfig::RECEIVE_COMPLETED_EMAIL)&.value == false
 
-        SubmitterMailer.completed_email(submitter, user, to:).deliver_later!
-      end
-
-      submitter.account.users.active.admins.each do |admin|
-        next if is_sent_to_user && admin.id == user.id
-
-        admin_submitter = submission.submitters.find { |s| s.email == admin.email }
-
-        if (!admin_submitter || admin_submitter.preferences['send_email'] == false) &&
-           admin.user_configs.find_by(key: UserConfig::RECEIVE_COMPLETED_EMAIL)&.value != false
-          SubmitterMailer.completed_email(submitter, admin).deliver_later!
-        end
-      end
-    end
+    SubmitterMailer.completed_email(submitter, user).deliver_later!
 
     # Disabled: submitters receive a documents copy only via "Send copy via email" on the completion page.
     # maybe_enqueue_copy_emails(submitter)

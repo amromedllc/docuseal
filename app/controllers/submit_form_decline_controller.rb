@@ -19,9 +19,11 @@ class SubmitFormDeclineController < ApplicationController
       SubmissionEvents.create_with_tracking_data(submitter, 'decline_form', request, { reason: params[:reason] })
     end
 
-    user = submitter.submission.created_by_user || submitter.template.author
+    template = submitter.template
+    user = template&.author
 
-    if user.user_configs.find_by(key: UserConfig::RECEIVE_DECLINED_EMAIL)&.value != false
+    if user && user.account_id == submitter.account_id &&
+       user.user_configs.find_by(key: UserConfig::RECEIVE_DECLINED_EMAIL)&.value != false
       SubmitterMailer.declined_email(submitter, user).deliver_later!
     end
 
