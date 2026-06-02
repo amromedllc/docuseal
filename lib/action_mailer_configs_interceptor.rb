@@ -15,18 +15,6 @@ module ActionMailerConfigsInterceptor
       return message
     end
 
-    if Rails.env.production? && Rails.application.config.action_mailer.delivery_method
-      from = ENV.fetch('SMTP_FROM').to_s.split(',').sample
-
-      if from.match?(User::FULL_EMAIL_REGEXP)
-        message[:from] = message[:from].to_s.sub(User::EMAIL_REGEXP, from)
-      else
-        message.from = from
-      end
-
-      return message
-    end
-
     account_id = message.instance_variable_get(:@message_metadata)&.dig('account_id')
 
     email_configs =
@@ -36,15 +24,47 @@ module ActionMailerConfigsInterceptor
         EncryptedConfig.order(:account_id).find_by(key: EncryptedConfig::EMAIL_SMTP_KEY)
       end
 
-    if email_configs
-      message.delivery_method(:smtp, build_smtp_configs_hash(email_configs))
-
-      message.from = %("#{email_configs.account.name.to_s.delete('"')}" <#{email_configs.value['from_email']}>)
+    if email_configs&.value&.dig('host').present?
+      apply_account_smtp!(message, email_configs)
+    elsif global_smtp_configured?
+      apply_global_smtp!(message)
     elsif !Docuseal.multitenant? || account_id
       message.delivery_method(:test)
     end
 
     message
+  end
+
+  def global_smtp_configured?
+    ENV['SMTP_ADDRESS'].present?
+  end
+
+  def apply_global_smtp!(message)
+    message.delivery_method(:smtp, build_global_smtp_hash)
+
+    from = ENV.fetch('SMTP_FROM').to_s.split(',').map(&:strip).reject(&:blank?).sample
+
+    message.from = from if from.present? && from.match?(User::FULL_EMAIL_REGEXP)
+  end
+
+  def apply_account_smtp!(message, email_configs)
+    message.delivery_method(:smtp, build_smtp_configs_hash(email_configs))
+
+    message.from = %("#{email_configs.account.name.to_s.delete('"')}" <#{email_configs.value['from_email']}>)
+  end
+
+  def build_global_smtp_hash
+    {
+      address: ENV.fetch('SMTP_ADDRESS'),
+      port: ENV.fetch('SMTP_PORT', 587).to_i,
+      domain: ENV['SMTP_DOMAIN'].presence,
+      user_name: ENV['SMTP_USERNAME'].presence,
+      password: ENV['SMTP_PASSWORD'].presence,
+      authentication: ENV['SMTP_PASSWORD'].present? ? ENV.fetch('SMTP_AUTHENTICATION', 'plain') : nil,
+      enable_starttls_auto: ENV['SMTP_ENABLE_STARTTLS_AUTO'] != 'false',
+      open_timeout: OPEN_TIMEOUT,
+      read_timeout: READ_TIMEOUT
+    }.compact
   end
 
   def build_smtp_configs_hash(email_configs)
