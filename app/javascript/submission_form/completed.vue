@@ -91,10 +91,10 @@
     >
       {{ t('powered_by') }}
       <a
-        href="https://www.docuseal.com/start"
+        href="https://app.therapypms.com/"
         target="_blank"
         class="underline"
-      >DocuSeal</a> - {{ t('open_source_documents_software') }}
+      >TherapyPMS</a> - {{ t('open_source_documents_software') }}
     </div>
   </div>
 </template>
