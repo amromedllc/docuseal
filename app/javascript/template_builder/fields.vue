@@ -114,7 +114,7 @@
       :key="type"
     >
       <button
-        v-if="fieldTypes.includes(type) || ((withPhone || type != 'phone') && (withPayment || type != 'payment') && (withVerification || type != 'verification') && (withKba || type != 'kba'))"
+        v-if="fieldTypes.includes(type) || ((withPhone || type != 'phone') && (withVoice || type != 'voice') && (withPayment || type != 'payment') && (withVerification || type != 'verification') && (withKba || type != 'kba'))"
         :id="`${type}_type_field_button`"
         draggable="true"
         class="field-type-button group flex items-center justify-center border border-dashed w-full rounded relative fields-grid-item"
@@ -300,7 +300,7 @@ export default {
     IconDrag,
     IconLock
   },
-  inject: ['save', 'backgroundColor', 'withPhone', 'withVerification', 'withKba', 'withPayment', 't', 'fieldsDragFieldRef', 'baseFetch', 'selectedAreasRef'],
+  inject: ['save', 'backgroundColor', 'withPhone', 'withVoice', 'withVerification', 'withKba', 'withPayment', 't', 'fieldsDragFieldRef', 'baseFetch', 'selectedAreasRef'],
   props: {
     fields: {
       type: Array,

@@ -688,6 +688,14 @@ en: &en
   stamp_field: Stamp Field
   payment_field: Payment Field
   phone_field: Phone Field
+  voice_field: Voice Field
+  voice_summarize: Summarize
+  voice_summarizing: Summarizing...
+  voice_summary: Summary
+  voice_use_summary: Use summary
+  voice_summarize_failed: Unable to summarize text. Please try again.
+  voice_summarize_text_required: Text is required to summarize.
+  voice_summarize_text_too_long: Text is too long to summarize.
   verification_field: Identity Verification
   knowledge_based_authentication: Knowledge Based Authentication
   kba_field: KBA
@@ -1673,6 +1681,7 @@ es: &es
   stamp_field: Campo de Sello
   payment_field: Campo de Pago
   phone_field: Campo de Teléfono
+  voice_field: Campo de Voz
   verification_field: Verificación de Identidad
   identity_verification: Verificación de Identidad
   paid_price: 'Pagado %{price}'
@@ -2655,6 +2664,7 @@ it: &it
   stamp_field: Campo Timbro
   payment_field: Campo Pagamento
   phone_field: Campo Telefono
+  voice_field: Campo Vocale
   verification_field: "Verifica dell'identità"
   identity_verification: "Verifica dell'identità"
   paid_price: 'Pagato %{price}'
@@ -3638,6 +3648,7 @@ fr: &fr
   stamp_field: Champ tampon
   payment_field: Champ paiement
   phone_field: Champ téléphone
+  voice_field: Champ vocal
   verification_field: Champ de vérification
   identity_verification: Vérification d’identité
   paid_price: Payé %{price}
@@ -4617,6 +4628,7 @@ pt: &pt
   stamp_field: Campo de Carimbo
   payment_field: Campo de Pagamento
   phone_field: Campo de Telefone
+  voice_field: Campo de Voz
   verification_field: "Verificação de Identidade"
   identity_verification: "Verificação de identidade"
   paid_price: 'Pago %{price}'
@@ -5599,6 +5611,7 @@ de: &de
   stamp_field: Stempelfeld
   payment_field: Zahlungsfeld
   phone_field: Telefonfeld
+  voice_field: Sprachfeld
   verification_field: Identitätsüberprüfung
   identity_verification: Identitätsüberprüfung
   paid_price: 'Bezahlt %{price}'
@@ -6970,6 +6983,7 @@ nl: &nl
   stamp_field: Stempelveld
   payment_field: Betalingsveld
   phone_field: Telefoonveld
+  voice_field: Stemveld
   verification_field: Identiteitsverificatie
   identity_verification: Identiteitsverificatie
   paid_price: Betaald %{price}

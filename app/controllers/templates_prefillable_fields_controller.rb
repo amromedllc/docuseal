@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TemplatesPrefillableFieldsController < ApplicationController
-  PREFILLABLE_FIELD_TYPES = %w[text number cells date checkbox select radio phone].freeze
+  PREFILLABLE_FIELD_TYPES = %w[text voice number cells date checkbox select radio phone].freeze
 
   load_and_authorize_resource :template
 

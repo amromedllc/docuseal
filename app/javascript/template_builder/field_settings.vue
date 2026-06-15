@@ -87,7 +87,7 @@
     </label>
   </div>
   <div
-    v-if="['text', 'number'].includes(field.type) && !defaultField"
+    v-if="['text', 'voice', 'number'].includes(field.type) && !defaultField"
     class="py-1.5 px-1 relative"
     @click.stop
   >
@@ -95,7 +95,7 @@
       v-model="field.default_value"
       :placeholder="t('default_value')"
       dir="auto"
-      :type="field.type"
+      :type="field.type === 'voice' ? 'text' : field.type"
       class="input input-bordered input-xs w-full max-w-xs h-7 !outline-0 bg-transparent"
       @blur="save"
     >
@@ -109,7 +109,7 @@
     </label>
   </div>
   <div
-    v-if="['text', 'cells'].includes(field.type)"
+    v-if="['text', 'voice', 'cells'].includes(field.type)"
     class="py-1.5 px-1 relative"
     @click.stop
   >
@@ -147,7 +147,7 @@
     </label>
   </div>
   <div
-    v-if="['text', 'cells'].includes(field.type) && field.validation && lengthValidation"
+    v-if="['text', 'voice', 'cells'].includes(field.type) && field.validation && lengthValidation"
     class="py-1.5 px-1 relative flex space-x-1"
     @click.stop
   >
@@ -262,7 +262,7 @@
     </label>
   </div>
   <div
-    v-if="['text', 'cells'].includes(field.type) && field.validation && !validations[field.validation.pattern] && !lengthValidation"
+    v-if="['text', 'voice', 'cells'].includes(field.type) && field.validation && !validations[field.validation.pattern] && !lengthValidation"
     class="py-1.5 px-1 relative"
     @click.stop
   >
@@ -284,7 +284,7 @@
     </label>
   </div>
   <div
-    v-if="['text', 'cells'].includes(field.type) && field.validation && !validations[field.validation.pattern] && !lengthValidation"
+    v-if="['text', 'voice', 'cells'].includes(field.type) && field.validation && !validations[field.validation.pattern] && !lengthValidation"
     class="py-1.5 px-1 relative"
     @click.stop
   >
@@ -437,7 +437,7 @@
     </label>
   </li>
   <li
-    v-if="['text', 'number'].includes(field.type)"
+    v-if="['text', 'voice', 'number'].includes(field.type)"
     @click.stop
   >
     <label class="cursor-pointer py-1.5">
@@ -452,7 +452,7 @@
     </label>
   </li>
   <li
-    v-if="withPrefillable && ['text', 'number', 'cells', 'date', 'checkbox', 'select', 'radio', 'phone'].includes(field['type'])"
+    v-if="withPrefillable && ['text', 'voice', 'number', 'cells', 'date', 'checkbox', 'select', 'radio', 'phone'].includes(field['type'])"
     @click.stop
   >
     <label class="cursor-pointer py-1.5">
@@ -470,7 +470,7 @@
     v-if="field.type != 'stamp'"
     class="pb-0.5 mt-0.5"
   >
-  <li v-if="['text', 'number', 'date', 'select', 'heading'].includes(field.type)">
+  <li v-if="['text', 'voice', 'number', 'date', 'select', 'heading'].includes(field.type)">
     <label
       class="label-text cursor-pointer text-center w-full flex items-center"
       @click="$emit('click-font')"
@@ -564,7 +564,7 @@
       </a>
     </li>
   </template>
-  <li v-if="field.areas?.length === 1 && ['date', 'signature', 'initials', 'text', 'cells', 'stamp'].includes(field.type)">
+  <li v-if="field.areas?.length === 1 && ['date', 'signature', 'initials', 'text', 'voice', 'cells', 'stamp'].includes(field.type)">
     <a
       href="#"
       class="text-sm py-1 px-2"

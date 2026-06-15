@@ -628,6 +628,7 @@ export default {
       fieldTypes: this.fieldTypes,
       backgroundColor: this.backgroundColor,
       withPhone: this.withPhone,
+      withVoice: this.withVoice,
       withVerification: this.withVerification,
       withKba: this.withKba,
       withPayment: this.withPayment,
@@ -834,6 +835,11 @@ export default {
       default: false
     },
     withPhone: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    withVoice: {
       type: Boolean,
       required: false,
       default: false

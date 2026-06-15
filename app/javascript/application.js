@@ -158,6 +158,7 @@ safeRegisterElement('template-builder', class extends HTMLElement {
       backgroundColor: '#faf7f5',
       locale: this.dataset.locale,
       withPhone: this.dataset.withPhone === 'true',
+      withVoice: this.dataset.withVoice === 'true',
       withVerification: ['true', 'false'].includes(this.dataset.withVerification) ? this.dataset.withVerification === 'true' : null,
       withKba: ['true', 'false'].includes(this.dataset.withKba) ? this.dataset.withKba === 'true' : null,
       withLogo: this.dataset.withLogo !== 'false',

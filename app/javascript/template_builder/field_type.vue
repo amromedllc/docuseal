@@ -30,7 +30,7 @@
         v-for="(icon, type) in fieldIconsSorted"
         :key="type"
       >
-        <li v-if="fieldTypes.includes(type) || ((withPhone || type != 'phone') && (withPayment || type != 'payment') && (withVerification || type != 'verification') && (withKba || type != 'kba'))">
+        <li v-if="fieldTypes.includes(type) || ((withPhone || type != 'phone') && (withVoice || type != 'voice') && (withPayment || type != 'payment') && (withVerification || type != 'verification') && (withKba || type != 'kba'))">
           <a
             href="#"
             class="text-sm py-1 px-2"
@@ -51,11 +51,11 @@
 </template>
 
 <script>
-import { IconTextSize, IconWritingSign, IconCalendarEvent, IconPhoto, IconCheckbox, IconPaperclip, IconSelect, IconCircleDot, IconChecks, IconColumns3, IconPhoneCheck, IconLetterCaseUpper, IconCreditCard, IconRubberStamp, IconSquareNumber1, IconHeading, IconId, IconCalendarCheck, IconStrikethrough, IconUserScan } from '@tabler/icons-vue'
+import { IconTextSize, IconWritingSign, IconCalendarEvent, IconPhoto, IconCheckbox, IconPaperclip, IconSelect, IconCircleDot, IconChecks, IconColumns3, IconPhoneCheck, IconMicrophone, IconLetterCaseUpper, IconCreditCard, IconRubberStamp, IconSquareNumber1, IconHeading, IconId, IconCalendarCheck, IconStrikethrough, IconUserScan } from '@tabler/icons-vue'
 
 export default {
   name: 'FiledTypeDropdown',
-  inject: ['withPhone', 'withPayment', 'withVerification', 'withKba', 't', 'fieldTypes'],
+  inject: ['withPhone', 'withVoice', 'withPayment', 'withVerification', 'withKba', 't', 'fieldTypes'],
   props: {
     modelValue: {
       type: String,
@@ -114,6 +114,7 @@ export default {
         stamp: this.t('stamp'),
         payment: this.t('payment'),
         phone: this.t('phone'),
+        voice: this.t('voice'),
         verification: this.t('verify_id'),
         kba: this.t('kba')
       }
@@ -135,6 +136,7 @@ export default {
         stamp: this.t('stamp_field'),
         payment: this.t('payment_field'),
         phone: this.t('phone_field'),
+        voice: this.t('voice_field'),
         verification: this.t('verify_id'),
         kba: this.t('kba')
       }
@@ -159,6 +161,7 @@ export default {
         stamp: IconRubberStamp,
         payment: IconCreditCard,
         phone: IconPhoneCheck,
+        voice: IconMicrophone,
         verification: IconId,
         kba: IconUserScan
       }

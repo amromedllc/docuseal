@@ -571,7 +571,7 @@ export default {
     },
     isValueInput () {
       return (this.field.type === 'heading' && this.isHeadingSelected) || this.isContenteditable ||
-        (this.inputMode && (['text', 'number'].includes(this.field.type) || (this.field.type === 'date' && this.field.default_value !== '{{date}}')))
+        (this.inputMode && (['text', 'voice', 'number'].includes(this.field.type) || (this.field.type === 'date' && this.field.default_value !== '{{date}}')))
     },
     modalContainerEl () {
       return this.$el.getRootNode().querySelector('#docuseal_modal_container')
@@ -671,7 +671,7 @@ export default {
   watch: {
     'field.default_value' () {
       this.$nextTick(() => {
-        if (['date', 'text', 'number'].includes(this.field.type) && this.field.default_value && this.$refs.textContainer && (this.textOverflowChars === 0 || (this.textOverflowChars - 4) > `${this.field.default_value}`.length)) {
+        if (['date', 'text', 'voice', 'number'].includes(this.field.type) && this.field.default_value && this.$refs.textContainer && (this.textOverflowChars === 0 || (this.textOverflowChars - 4) > `${this.field.default_value}`.length)) {
           this.textOverflowChars = (this.$el.clientHeight + 1) < this.$refs.textContainer.clientHeight ? `${this.field.default_value}`.length : 0
         }
       })
@@ -679,7 +679,7 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      if (['date', 'text', 'number'].includes(this.field.type) && this.field.default_value && this.$refs.textContainer && (this.textOverflowChars === 0 || (this.textOverflowChars - 4) > `${this.field.default_value}`.length)) {
+      if (['date', 'text', 'voice', 'number'].includes(this.field.type) && this.field.default_value && this.$refs.textContainer && (this.textOverflowChars === 0 || (this.textOverflowChars - 4) > `${this.field.default_value}`.length)) {
         this.textOverflowChars = (this.$el.clientHeight + 1) < this.$refs.textContainer.clientHeight ? `${this.field.default_value}`.length : 0
       }
     })
@@ -699,7 +699,7 @@ export default {
         return
       }
 
-      if (['text', 'number'].includes(this.field.type)) {
+      if (['text', 'voice', 'number'].includes(this.field.type)) {
         this.isContenteditable = true
 
         this.focusValueInput()

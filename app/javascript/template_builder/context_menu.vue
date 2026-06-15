@@ -373,7 +373,7 @@ export default {
       if (this.isMultiSelection) return true
       if (!this.field) return false
 
-      return ['text', 'number', 'date', 'select', 'heading'].includes(this.field.type)
+      return ['text', 'voice', 'number', 'date', 'select', 'heading'].includes(this.field.type)
     },
     showDescription () {
       if (!this.field) return false
@@ -399,7 +399,7 @@ export default {
     showReadOnly () {
       if (!this.field) return false
 
-      return ['text', 'number'].includes(this.field.type)
+      return ['text', 'voice', 'number'].includes(this.field.type)
     },
     isRequired () {
       return this.field?.required || false

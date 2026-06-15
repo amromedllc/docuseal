@@ -91,7 +91,7 @@ module Submitters
 
       return nil if value.blank?
 
-      if field['type'] == 'text'
+      if field['type'].in?(%w[text voice])
         value.to_s
       elsif field['type'] == 'number'
         (value.to_f % 1).zero? ? value.to_i : value.to_f

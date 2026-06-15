@@ -149,6 +149,23 @@
               @focus="scrollIntoField(currentField)"
             />
           </div>
+          <VoiceStep
+            v-else-if="currentField.type === 'voice' && withVoice"
+            :key="currentField.uuid"
+            v-model="values[currentField.uuid]"
+            :show-field-names="showFieldNames"
+            :field="currentField"
+            :submitter-slug="submitterSlug"
+            @focus="scrollIntoField(currentField)"
+          />
+          <TextStep
+            v-else-if="currentField.type === 'voice'"
+            :key="currentField.uuid"
+            v-model="values[currentField.uuid]"
+            :show-field-names="showFieldNames"
+            :field="currentField"
+            @focus="scrollIntoField(currentField)"
+          />
           <NumberStep
             v-else-if="currentField.type === 'number'"
             :key="currentField.uuid"
@@ -582,6 +599,7 @@ import PaymentStep from './payment_step'
 import VerificationStep from './verification_step'
 import KbaStep from './kba_step'
 import TextStep from './text_step'
+import VoiceStep from './voice_step'
 import NumberStep from './number_step'
 import DateStep from './date_step'
 import MarkdownContent from './markdown_content'
@@ -632,6 +650,7 @@ export default {
     DateStep,
     IconArrowsDiagonal,
     TextStep,
+    VoiceStep,
     NumberStep,
     FormulaFieldAreas,
     PhoneStep,
@@ -645,6 +664,7 @@ export default {
       baseUrl: this.baseUrl,
       scrollIntoArea: this.scrollIntoArea,
       scrollIntoField: this.scrollIntoField,
+      withVoice: this.withVoice,
       t: this.t
     }
   },
@@ -756,6 +776,11 @@ export default {
       default: true
     },
     withConfetti: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    withVoice: {
       type: Boolean,
       required: false,
       default: false
