@@ -10,7 +10,7 @@ module VoiceSummarizer
 
     response = Faraday.post(url) do |req|
       req.headers['Content-Type'] = 'application/json'
-      req.headers['Authorization'] = "Bearer #{ENV['AI_SUMMARIZER_API_KEY']}" if ENV['AI_SUMMARIZER_API_KEY'].present?
+      req.headers['x-api-key'] = ENV['CLIENT_API_KEY'] if ENV['CLIENT_API_KEY'].present?
       req.body = { text: text }.to_json
       req.options.timeout = 30
       req.options.open_timeout = 10
