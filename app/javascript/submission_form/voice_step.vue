@@ -105,6 +105,14 @@
     >
       {{ summary }}
     </p>
+    <div
+      v-if="tokenInfo"
+      class="mt-3 flex gap-4 text-xs text-base-content/60 border-t border-base-300 pt-3"
+    >
+      <span>Used: <strong>{{ tokenInfo.used_token?.toLocaleString() }}</strong></span>
+      <span>Remaining: <strong>{{ tokenInfo.remaining_token?.toLocaleString() }}</strong></span>
+      <span>Total: <strong>{{ tokenInfo.fixed_token?.toLocaleString() }}</strong></span>
+    </div>
     <div class="mt-3 flex justify-end">
       <button
         type="button"
@@ -158,6 +166,7 @@ export default {
       recognition: null,
       isSummarizing: false,
       summary: '',
+      tokenInfo: null,
       summarizeError: '',
       shouldSummarizeOnStop: false
     }
@@ -221,6 +230,7 @@ export default {
       }
 
       this.summary = ''
+      this.tokenInfo = null
       this.summarizeError = ''
       this.resizeTextarea()
     },
@@ -253,6 +263,7 @@ export default {
       this.isSummarizing = true
       this.summarizeError = ''
       this.summary = ''
+      this.tokenInfo = null
 
       try {
         const response = await fetch(`${this.baseUrl}/api/voice_summarize`, {
@@ -273,6 +284,7 @@ export default {
         }
 
         this.summary = data.summary
+        this.tokenInfo = data.quota || null
       } catch (error) {
         this.summarizeError = error.message || this.t('voice_summarize_failed')
       } finally {

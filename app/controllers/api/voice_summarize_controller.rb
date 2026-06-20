@@ -22,9 +22,12 @@ module Api
 
       RateLimit.call("voice-summarize-#{request.remote_ip}", limit: 20, ttl: 1.minute, enabled: true)
 
-      summary = VoiceSummarizer.call(text)
+      admin_id = resolve_account&.tpms_admin_id
+      summary = VoiceSummarizer.call(text, admin_id: admin_id)
 
-      render json: { summary: }
+      quota = admin_id.present? ? VoiceSummarizer.quota(admin_id) : nil
+
+      render json: { summary:, quota: }
     rescue VoiceSummarizer::Error => e
       render json: { error: e.message }, status: :unprocessable_content
     rescue RateLimit::LimitApproached
@@ -32,6 +35,14 @@ module Api
     end
 
     private
+
+    def resolve_account
+      if params[:submitter_slug].present?
+        Submitter.find_by(slug: params[:submitter_slug])&.submission&.account
+      else
+        current_account
+      end
+    end
 
     def voice_feature_enabled?
       if params[:submitter_slug].present?
