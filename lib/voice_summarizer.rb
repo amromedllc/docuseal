@@ -8,8 +8,7 @@ module VoiceSummarizer
   def call(text, admin_id: nil)
     url = ENV.fetch('AI_SUMMARIZER_URL', 'https://ai-summarizer.amromed.com/api/v1/summarize')
 
-    body = { text: text }
-    body[:admin_id] = admin_id if admin_id.present?
+    body = { text: text, admin_id: admin_id.to_i }
 
     response = Faraday.post(url) do |req|
       req.headers['Content-Type'] = 'application/json'
