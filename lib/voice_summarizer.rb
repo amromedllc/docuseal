@@ -19,7 +19,8 @@ module VoiceSummarizer
     end
 
     unless response.success?
-      raise Error, I18n.t(:voice_summarize_failed)
+      service_message = parse_error_message(response.body)
+      raise Error, service_message || I18n.t(:voice_summarize_failed)
     end
 
     summary = parse_summary(JSON.parse(response.body))
@@ -49,6 +50,13 @@ module VoiceSummarizer
 
     JSON.parse(response.body)
   rescue Faraday::Error, JSON::ParserError
+    nil
+  end
+
+  def parse_error_message(body)
+    parsed = JSON.parse(body)
+    parsed['message'].presence || parsed['detail'].presence
+  rescue JSON::ParserError
     nil
   end
 
