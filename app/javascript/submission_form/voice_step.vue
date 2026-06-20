@@ -62,8 +62,15 @@
   </div>
   <div
     v-if="withVoice && text.trim().length > 0"
-    class="mt-3 flex justify-end"
+    class="mt-3 flex items-center justify-between"
   >
+    <span
+      v-if="tokenInfo"
+      class="text-xs text-base-content/60"
+    >
+      Remaining: <strong>{{ tokenInfo.remaining_token?.toLocaleString() }}</strong>
+    </span>
+    <span v-else />
     <button
       type="button"
       class="btn btn-sm btn-outline voice-summarize-button"
@@ -219,18 +226,32 @@ export default {
         this.resizeTextarea()
       })
     }
+
+    if (this.withVoice && this.submitterSlug) {
+      this.fetchQuota()
+    }
   },
   beforeUnmount () {
     this.stopListening()
   },
   methods: {
+    async fetchQuota () {
+      try {
+        const params = new URLSearchParams({ submitter_slug: this.submitterSlug })
+        const response = await fetch(`${this.baseUrl}/api/voice_summarize/quota?${params}`)
+
+        if (response.ok) {
+          const data = await response.json()
+          this.tokenInfo = data.quota || null
+        }
+      } catch {}
+    },
     onInput (event) {
       if (this.validationMessage) {
         event.target.setCustomValidity('')
       }
 
       this.summary = ''
-      this.tokenInfo = null
       this.summarizeError = ''
       this.resizeTextarea()
     },

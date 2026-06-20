@@ -36,7 +36,11 @@ Rails.application.routes.draw do
     resources :attachments, only: %i[create]
     resources :submitter_email_clicks, only: %i[create]
     resources :submitter_form_views, only: %i[create]
-    resources :voice_summarize, only: %i[create]
+    resources :voice_summarize, only: %i[create] do
+      collection do
+        get :quota
+      end
+    end
     resources :submitters, only: %i[index show update]
     resources :submissions, only: %i[index show create destroy] do
       resources :documents, only: %i[index], controller: 'submission_documents'

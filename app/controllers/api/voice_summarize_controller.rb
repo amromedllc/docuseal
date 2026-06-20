@@ -34,6 +34,17 @@ module Api
       render json: { error: I18n.t(:too_many_attempts) }, status: :too_many_requests
     end
 
+    def quota
+      unless voice_feature_enabled?
+        return render json: { error: 'Not authorized' }, status: :forbidden
+      end
+
+      admin_id = resolve_account&.tpms_admin_id
+      quota = admin_id.present? ? VoiceSummarizer.quota(admin_id) : nil
+
+      render json: { quota: }
+    end
+
     private
 
     def resolve_account
