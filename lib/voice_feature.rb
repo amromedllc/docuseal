@@ -3,14 +3,15 @@
 module VoiceFeature
   # Add SSO user emails allowed to use voice fields and summarization.
   ALLOWED_USER_EMAILS = %w[
-    admin@admin.com
+    admin@admin.com,
+    liveandplayinla@gmail.com,
   ].freeze
 
   # Add account IDs (from accounts table) allowed for all users in that account.
-  ALLOWED_ACCOUNT_IDS = [].freeze
+  ALLOWED_ACCOUNT_IDS = [467].freeze
 
   # Add facility/company IDs from SSO JWT (facility_id / tpms_admin_id on accounts).
-  ALLOWED_TPMS_ADMIN_IDS = [].freeze
+  ALLOWED_TPMS_ADMIN_IDS = [1089].freeze
 
   module_function
 
