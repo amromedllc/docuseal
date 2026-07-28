@@ -108,9 +108,8 @@ class SendSignatureCallbackJob
     nil
   end
 
-  # Always send clean standard base64 PNG — no data-URI prefix, no newlines.
-  # This avoids TherapyPMS "invalid base 64 format" when the stored file is
-  # SVG/typed-text or accidentally includes a data:image/...;base64, prefix.
+  # Always send PNG as a data URI: data:image/png;base64,<payload>
+  # TherapyPMS expects this exact format (not raw base64 alone).
   def encode_png_base64(attachment)
     raw = attachment.download
     return if raw.blank?
@@ -126,7 +125,7 @@ class SendSignatureCallbackJob
         raw
       end
 
-    Base64.strict_encode64(png_bytes)
+    "data:image/png;base64,#{Base64.strict_encode64(png_bytes)}"
   rescue StandardError => e
     Rails.logger.error("SendSignatureCallbackJob signature encode error: #{e.message}")
     nil
