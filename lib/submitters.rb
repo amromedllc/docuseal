@@ -172,6 +172,7 @@ module Submitters
       next if submitter.email.blank?
       next if submitter.declined_at?
       next if submitter.preferences['send_email'] == false
+      next if RestrictedInvitationEmailAccounts.restricted_for?(submitter.account)
 
       if delay_seconds
         SendSubmitterInvitationEmailJob.perform_in((delay_seconds + index).seconds, 'submitter_id' => submitter.id)
