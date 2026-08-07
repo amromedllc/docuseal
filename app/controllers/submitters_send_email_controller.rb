@@ -4,6 +4,10 @@ class SubmittersSendEmailController < ApplicationController
   load_and_authorize_resource :submitter, id_param: :submitter_slug, find_by: :slug
 
   def create
+    if RestrictedInvitationEmailAccounts.restricted_for?(@submitter.account)
+      return redirect_back(fallback_location: submission_path(@submitter.submission))
+    end
+
     if Docuseal.multitenant? && SubmissionEvent.exists?(submitter: @submitter,
                                                         event_type: 'send_email',
                                                         created_at: 10.hours.ago..Time.current)
