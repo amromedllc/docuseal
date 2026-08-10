@@ -378,7 +378,7 @@ export default {
     showDescription () {
       if (!this.field) return false
 
-      return !['stamp', 'heading', 'strikethrough'].includes(this.field.type)
+      return !['stamp', 'heading', 'strikethrough', 'cover'].includes(this.field.type)
     },
     showCondition () {
       if (this.isMultiSelection) return true
@@ -394,7 +394,7 @@ export default {
     showRequired () {
       if (!this.field) return false
 
-      return !['phone', 'stamp', 'verification', 'strikethrough', 'heading'].includes(this.field.type)
+      return !['phone', 'stamp', 'verification', 'strikethrough', 'heading', 'cover'].includes(this.field.type)
     },
     showReadOnly () {
       if (!this.field) return false

@@ -212,10 +212,11 @@ module Submissions
 
       (submission.template_fields || submission.template.fields).each do |field|
         next if !with_headings &&
-                (field['type'] == 'heading' || (field['type'] == 'strikethrough' && field['conditions'].blank?))
+                (field['type'] == 'heading' ||
+                 (field['type'].in?(%w[strikethrough cover]) && field['conditions'].blank?))
 
         next if field['submitter_uuid'] != submitter.uuid && field['type'] != 'heading' &&
-                (field['type'] != 'strikethrough' || field['conditions'].present?)
+                (!field['type'].in?(%w[strikethrough cover]) || field['conditions'].present?)
 
         field.fetch('areas', []).each do |area|
           pdf = pdfs_index[area['attachment_uuid']]
@@ -260,7 +261,7 @@ module Submissions
 
           value = submitter.values[field['uuid']]
           value = field['default_value'] if field['type'] == 'heading'
-          value = field['default_value'] if field['type'] == 'strikethrough' && value.nil? && field['conditions'].blank?
+          value = field['default_value'] if field['type'].in?(%w[strikethrough cover]) && value.nil? && field['conditions'].blank?
 
           text_align = field.dig('preferences', 'align').to_s.to_sym.presence ||
                        (value.to_s.match?(RTL_REGEXP) ? :right : :left)
@@ -595,6 +596,11 @@ module Submissions
               cell_layouter.fit([text], cell_width, [line_height, area['h'] * height].max)
                            .draw(canvas, x, height - (area['y'] * height))
             end
+          when 'cover'
+            canvas.fill_color('ffffff')
+                  .rectangle(area['x'] * width, height - (area['y'] * height) - (area['h'] * height),
+                             area['w'] * width, area['h'] * height)
+                  .fill
           when 'strikethrough'
             scale = 1000.0 / width
 

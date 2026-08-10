@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { IconTextSize, IconWritingSign, IconCalendarEvent, IconPhoto, IconCheckbox, IconPaperclip, IconSelect, IconCircleDot, IconChecks, IconColumns3, IconPhoneCheck, IconMicrophone, IconLetterCaseUpper, IconCreditCard, IconRubberStamp, IconSquareNumber1, IconHeading, IconId, IconCalendarCheck, IconStrikethrough, IconUserScan } from '@tabler/icons-vue'
+import { IconTextSize, IconWritingSign, IconCalendarEvent, IconPhoto, IconCheckbox, IconPaperclip, IconSelect, IconCircleDot, IconChecks, IconColumns3, IconPhoneCheck, IconMicrophone, IconLetterCaseUpper, IconCreditCard, IconRubberStamp, IconSquareNumber1, IconHeading, IconId, IconCalendarCheck, IconStrikethrough, IconUserScan, IconEraser } from '@tabler/icons-vue'
 
 export default {
   name: 'FiledTypeDropdown',
@@ -98,6 +98,7 @@ export default {
       return {
         heading: this.t('heading'),
         strikethrough: this.t('strikeout'),
+        cover: this.t('cover'),
         text: this.t('text'),
         signature: this.t('signature'),
         initials: this.t('initials'),
@@ -145,6 +146,7 @@ export default {
       return {
         heading: IconHeading,
         strikethrough: IconStrikethrough,
+        cover: IconEraser,
         text: IconTextSize,
         signature: IconWritingSign,
         initials: IconLetterCaseUpper,

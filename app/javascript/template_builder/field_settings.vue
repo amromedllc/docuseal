@@ -380,7 +380,7 @@
     </label>
   </li>
   <li
-    v-if="withRequired && field.type !== 'phone' && field.type !== 'stamp' && field.type !== 'verification' && field.type !== 'strikethrough' && field.type !== 'heading'"
+    v-if="withRequired && field.type !== 'phone' && field.type !== 'stamp' && field.type !== 'verification' && field.type !== 'strikethrough' && field.type !== 'heading' && field.type !== 'cover'"
     @click.stop
   >
     <label class="cursor-pointer py-1.5">
@@ -484,7 +484,7 @@
     </label>
   </li>
   <li
-    v-if="field.type != 'stamp' && field.type != 'heading' && field.type != 'strikethrough'"
+    v-if="field.type != 'stamp' && field.type != 'heading' && field.type != 'strikethrough' && field.type != 'cover'"
   >
     <label
       class="label-text cursor-pointer text-center w-full flex items-center"

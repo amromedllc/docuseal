@@ -431,7 +431,7 @@ export default {
       } else {
         const typeIndex = fields.filter((f) => f.type === field.type).indexOf(field)
 
-        if (field.type === 'heading' || field.type === 'strikethrough') {
+        if (field.type === 'heading' || field.type === 'strikethrough' || field.type === 'cover') {
           return `${this.fieldNames[field.type]} ${typeIndex + 1}`
         } else {
           return `${this.fieldLabels[field.type]} ${typeIndex + 1}`
@@ -501,7 +501,7 @@ export default {
         this.field.readonly = true
       }
 
-      if (this.field.type === 'strikethrough') {
+      if (this.field.type === 'strikethrough' || this.field.type === 'cover') {
         this.field.readonly = true
         this.field.default_value = true
       }
