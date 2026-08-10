@@ -78,6 +78,8 @@
     <div class="flex w-full px-0.5 whitespace-nowrap <%= valign == 'top' ? 'items-start' : (valign == 'bottom' ? 'items-end' : 'items-center') %>">
       <div class="w-full"><%= NumberUtils.format_number(value, field.dig('preferences', 'format')) %></div>
     </div>
+  <% elsif field['type'] == 'cover' %>
+    <div class="w-full h-full" style="background: #fff"></div>
   <% elsif field['type'] == 'strikethrough' %>
     <div class="w-full h-full flex items-center justify-center">
       <% if (((1000.0 / local_assigns[:page_width]) * local_assigns[:page_height]) * area['h']) < 40 %>

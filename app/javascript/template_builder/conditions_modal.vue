@@ -188,7 +188,7 @@ export default {
   },
   computed: {
     excludeTypes () {
-      return ['heading', 'strikethrough']
+      return ['heading', 'strikethrough', 'cover']
     },
     fields () {
       if (this.item.submitter_uuid) {

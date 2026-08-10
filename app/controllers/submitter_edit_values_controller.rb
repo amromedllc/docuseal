@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class SubmitterEditValuesController < ApplicationController
-  NON_EDITABLE_TYPES = %w[signature initials image stamp file payment verification kba heading strikethrough].freeze
+  NON_EDITABLE_TYPES = %w[signature initials image stamp file payment verification kba heading strikethrough
+                           cover].freeze
 
   before_action :load_and_authorize_submitter
 

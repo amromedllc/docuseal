@@ -7,6 +7,7 @@ const en = {
   autodetect_fields: 'Autodetect fields',
   payment_link: 'Payment link',
   strikeout: 'Strikeout',
+  cover: 'Cover',
   draw_strikethrough_the_document: 'Draw strikethrough the document',
   quantity: 'Quantity',
   prefillable: 'Prefillable',

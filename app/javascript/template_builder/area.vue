@@ -39,7 +39,7 @@
       @pointerdown.stop
     >
       <FieldSubmitter
-        v-if="field.type != 'heading' && field.type != 'strikethrough'"
+        v-if="field.type != 'heading' && field.type != 'strikethrough' && field.type != 'cover'"
         v-model="field.submitter_uuid"
         class="border-r roles-dropdown"
         :compact="true"
@@ -170,7 +170,7 @@
       <span
         v-if="field"
         class="flex justify-center items-center space-x-1"
-        :class="{ 'w-full': isWFullType, 'h-full': !isValueInput && (!isDefaultValuePresent || field.type === 'strikethrough') }"
+        :class="{ 'w-full': isWFullType, 'h-full': !isValueInput && (!isDefaultValuePresent || field.type === 'strikethrough' || field.type === 'cover') }"
       >
         <div
           v-if="field.type === 'strikethrough'"
@@ -214,6 +214,10 @@
             />
           </svg>
         </div>
+        <div
+          v-else-if="field.type === 'cover'"
+          class="w-full h-full bg-white"
+        />
         <div
           v-else-if="isDefaultValuePresent || isValueInput || isSelectInput || (withFieldPlaceholder && field.areas && field.type !== 'checkbox')"
           :class="{ 'w-full h-full': isWFullType }"
@@ -499,6 +503,8 @@ export default {
         return 'bg-gray-50'
       } else if (this.field.type === 'strikethrough') {
         return 'bg-transparent'
+      } else if (this.field.type === 'cover') {
+        return 'bg-white'
       } else {
         return this.bgColors[this.submitterIndex % this.bgColors.length]
       }
@@ -513,7 +519,7 @@ export default {
       }
     },
     isWFullType () {
-      return ['cells', 'checkbox', 'radio', 'multiple', 'select', 'strikethrough'].includes(this.field.type)
+      return ['cells', 'checkbox', 'radio', 'multiple', 'select', 'strikethrough', 'cover'].includes(this.field.type)
     },
     strikethroughWidth () {
       if (this.isInlineSize) {
@@ -835,7 +841,7 @@ export default {
         this.field.readonly = true
       }
 
-      if (this.field.type === 'strikethrough') {
+      if (this.field.type === 'strikethrough' || this.field.type === 'cover') {
         this.field.readonly = true
         this.field.default_value = true
       }

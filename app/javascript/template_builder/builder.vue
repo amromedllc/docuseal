@@ -458,7 +458,7 @@
                 {{ t('cancel') }}
               </button>
               <a
-                v-if="!drawField && !drawOption && !['stamp', 'signature', 'initials', 'heading', 'strikethrough'].includes(drawField?.type || drawFieldType)"
+                v-if="!drawField && !drawOption && !['stamp', 'signature', 'initials', 'heading', 'strikethrough', 'cover'].includes(drawField?.type || drawFieldType)"
                 href="#"
                 class="link block mt-3 text-sm"
                 @click.prevent="[addField(drawFieldType), drawField = null, drawOption = null, withSelectedFieldType ? '' : drawFieldType = '', showDrawField = false]"
@@ -1381,6 +1381,12 @@ export default {
       return -1
     },
     insertField (field) {
+      if (field.type === 'cover') {
+        this.template.fields.unshift(field)
+
+        return
+      }
+
       const insertIndex = this.findFieldInsertIndex(field)
 
       if (insertIndex !== -1) {
@@ -1432,7 +1438,7 @@ export default {
         }
       }
 
-      if (field.type === 'strikethrough') {
+      if (field.type === 'strikethrough' || field.type === 'cover') {
         field.readonly = true
         field.default_value = true
       }
@@ -2105,10 +2111,10 @@ export default {
           field.default_value = '{{date}}'
         }
 
-        if (['stamp', 'heading', 'strikethrough'].includes(field.type)) {
+        if (['stamp', 'heading', 'strikethrough', 'cover'].includes(field.type)) {
           field.readonly = true
 
-          if (field.type === 'strikethrough') {
+          if (field.type === 'strikethrough' || field.type === 'cover') {
             field.default_value = true
           }
         }
