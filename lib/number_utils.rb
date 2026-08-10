@@ -21,7 +21,9 @@ module NumberUtils
   def format_number(number, format)
     locale = FORMAT_LOCALES[format]
 
-    if CURRENCY_SYMBOLS[format]
+    if format == 'percent'
+      ApplicationController.helpers.number_to_percentage(number.to_f * 100, precision: 2, strip_insignificant_zeros: true)
+    elsif CURRENCY_SYMBOLS[format]
       ApplicationController.helpers.number_to_currency(number, locale:, precision: 2, unit: CURRENCY_SYMBOLS[format])
     elsif locale
       ApplicationController.helpers.number_with_delimiter(number, locale:)
