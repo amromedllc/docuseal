@@ -629,7 +629,7 @@ export default {
       } else if (format === 'space') {
         return new Intl.NumberFormat('fr-FR').format(number)
       } else if (format === 'percent') {
-        return new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 2 }).format(number)
+        return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(number)}%`
       } else {
         return number
       }
