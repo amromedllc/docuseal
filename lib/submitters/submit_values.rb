@@ -222,7 +222,16 @@ module Submitters
       end
     end
 
-    def calculate_formula_value(_formula, _values)
+    def calculate_formula_value(formula, values)
+      expression = formula.gsub(/{{(.*?)}}/) do
+        value = values[Regexp.last_match(1)]
+        value = value.first if value.is_a?(Array)
+
+        value.presence || 0
+      end
+
+      Dentaku::Calculator.new.evaluate!(expression.downcase).to_f
+    rescue Dentaku::Error, TypeError
       0
     end
 
