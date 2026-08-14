@@ -22,7 +22,7 @@ module NumberUtils
     locale = FORMAT_LOCALES[format]
 
     if format == 'percent'
-      ApplicationController.helpers.number_to_percentage(number.to_f, precision: 2, strip_insignificant_zeros: true)
+      ApplicationController.helpers.number_to_percentage(number.to_f * 100, precision: 2, strip_insignificant_zeros: true)
     elsif CURRENCY_SYMBOLS[format]
       ApplicationController.helpers.number_to_currency(number, locale:, precision: 2, unit: CURRENCY_SYMBOLS[format])
     elsif locale
