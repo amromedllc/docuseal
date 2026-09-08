@@ -1789,8 +1789,6 @@ export default {
 
       if (!field || !area) return
 
-      this.resetFieldFont(field)
-
       if (!isSameTemplate) {
         delete field.conditions
         delete field.preferences?.formula
@@ -1870,8 +1868,6 @@ export default {
         const field = JSON.parse(JSON.stringify(item.field))
         const area = JSON.parse(JSON.stringify(item.area))
 
-        this.resetFieldFont(field)
-
         if (!isSameTemplate) {
           delete field.conditions
           delete field.preferences?.formula
@@ -1926,13 +1922,6 @@ export default {
       this.selectedAreasRef.value = [...newAreas]
 
       this.save()
-    },
-    resetFieldFont (field) {
-      if (!field?.preferences) return
-
-      const fontKeys = ['font', 'font_size', 'font_type', 'align', 'valign', 'color']
-
-      fontKeys.forEach((key) => delete field.preferences[key])
     },
     hasClipboardData () {
       try {
