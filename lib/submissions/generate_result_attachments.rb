@@ -247,10 +247,18 @@ module Submissions
           fill_color = field.dig('preferences', 'color').to_s.delete_prefix('#').presence
           bg_color = field.dig('preferences', 'background').to_s.delete_prefix('#').presence
 
+          value = submitter.values[field['uuid']]
+          value = field['default_value'] if field['type'] == 'heading'
+          value = field['default_value'] if field['type'].in?(%w[strikethrough cover]) && value.nil? && field['conditions'].blank?
+
           font_name = field.dig('preferences', 'font')
           font_variant = (field.dig('preferences', 'font_type').presence || 'none').to_sym
 
-          font_name = FONT_NAME unless font_name.in?(DEFAULT_FONTS)
+          if font_name.blank? && latin_renderable?(value)
+            font_name = 'Helvetica'
+          elsif !font_name.in?(DEFAULT_FONTS)
+            font_name = FONT_NAME
+          end
 
           if font_variant != :none && font_name == FONT_NAME
             font_name = FONT_VARIANS[font_variant] if FONT_VARIANS[font_variant]
@@ -258,10 +266,6 @@ module Submissions
           end
 
           font = pdf.fonts.add(font_name, variant: font_variant, custom_encoding: font_name.in?(DEFAULT_FONTS))
-
-          value = submitter.values[field['uuid']]
-          value = field['default_value'] if field['type'] == 'heading'
-          value = field['default_value'] if field['type'].in?(%w[strikethrough cover]) && value.nil? && field['conditions'].blank?
 
           text_align = field.dig('preferences', 'align').to_s.to_sym.presence ||
                        (value.to_s.match?(RTL_REGEXP) ? :right : :left)
@@ -858,6 +862,12 @@ module Submissions
       Rollbar.error(e) if defined?(Rollbar)
 
       pdf
+    end
+
+    # Helvetica (a PDF standard-14 font) only covers Latin text. Anything outside that range
+    # keeps the bundled GoNotoKurrent font so accents / non-Latin scripts still render.
+    def latin_renderable?(value)
+      Array.wrap(value).all? { |v| v.to_s.each_char.all? { |c| c.ord <= 0xFF } }
     end
 
     def on_missing_glyph(character, font_wrapper)
