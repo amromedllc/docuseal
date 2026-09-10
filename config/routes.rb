@@ -52,6 +52,7 @@ Rails.application.routes.draw do
     resources :templates, only: %i[update show index destroy] do
       resources :clone, only: %i[create], controller: 'templates_clone'
       resources :submissions, only: %i[index create]
+      resources :submissions_export, only: %i[index], controller: 'templates_submissions_export'
     end
     resources :tools, only: %i[] do
       post :merge, on: :collection
