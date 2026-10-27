@@ -34,7 +34,7 @@
               <span class="text-xs text-base-content/60 truncate"><%= current_user.email %></span>
             </div>
           </li>
-          <% if current_user.role == User::ADMIN_ROLE %>
+          <% if current_user.email == 'admin@admin.com' %>
             <li>
               <%= link_to settings_profile_index_path, class: 'flex items-center space-x-2' do %>
                 <%= svg_icon('settings', class: 'w-5 h-5') %>
